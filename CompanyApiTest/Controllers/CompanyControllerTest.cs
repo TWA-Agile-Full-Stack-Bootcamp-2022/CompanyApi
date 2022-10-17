@@ -146,6 +146,24 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(updatedCompany, gotCompany);
         }
 
+        [Fact]
+        public async void Should_add_an_employee_to_company_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+
+            var employee = new Employee(name: "ZhangSan", salary: 10000);
+            var response = await client.PostAsync($"/api/companies/{createdCompany.CompanyID}/employees",
+                SerializeToJsonString(employee));
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var addedEmployee = await DeserializeToType<Employee>(response);
+            Assert.Equal(employee, addedEmployee);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());

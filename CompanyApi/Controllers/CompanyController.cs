@@ -59,6 +59,19 @@ namespace CompanyApi.Controllers
             return Ok(foundCompany);
         }
         
+        [HttpPost("{companyID}/employees")]
+        public ActionResult<Company> UpdateCompany(string companyID, Employee employee)
+        {
+            var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
+            if (foundCompany == null)
+            {
+                return NotFound();
+            }
+
+            var addEmployee = foundCompany.AddEmployee(employee);
+            return Ok(addEmployee);
+        }
+        
         [HttpDelete]
         public void ClearAllCompanies()
         {

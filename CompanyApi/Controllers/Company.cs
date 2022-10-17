@@ -32,5 +32,10 @@ namespace CompanyApi.Controllers
         {
             Name = updatedCompany.Name;
         }
+
+        public Employee AddEmployee(Employee newEmployee)
+        {
+            return newEmployee;
+        }
     }
 }
