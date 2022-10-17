@@ -46,18 +46,6 @@ namespace CompanyApi.Controllers
             return Employees.Find(employee => employee.EmployeeID.Equals(employeeID));
         }
 
-        public Employee UpdateEmployee(string employeeID, Employee modifiedEmployee)
-        {
-            var foundEmployee = Employees.Find(employee => employee.EmployeeID.Equals(employeeID));
-            if (foundEmployee == null)
-            {
-                return null;
-            }
-
-            foundEmployee.UpdateBy(modifiedEmployee);
-            return foundEmployee;
-        }
-
         public void DeleteEmployee(string employeeID)
         {
             Employees.RemoveAll(employee => employee.EmployeeID.Equals(employeeID));
