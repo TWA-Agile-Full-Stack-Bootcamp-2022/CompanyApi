@@ -58,9 +58,9 @@ namespace CompanyApi.Controllers
             foundCompany.UpdateBy(updatedCompany);
             return Ok(foundCompany);
         }
-        
+
         [HttpPost("{companyID}/employees")]
-        public ActionResult<Company> UpdateCompany(string companyID, Employee employee)
+        public ActionResult<Employee> AddNewEmployee(string companyID, Employee employee)
         {
             var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
             if (foundCompany == null)
@@ -71,7 +71,19 @@ namespace CompanyApi.Controllers
             var addEmployee = foundCompany.AddEmployee(employee);
             return Ok(addEmployee);
         }
-        
+
+        [HttpGet("{companyID}/employees")]
+        public ActionResult GetEmployees(string companyID)
+        {
+            var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
+            if (foundCompany == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(foundCompany.Employees);
+        }
+
         [HttpDelete]
         public void ClearAllCompanies()
         {

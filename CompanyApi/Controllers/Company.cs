@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers
 {
@@ -14,8 +16,8 @@ namespace CompanyApi.Controllers
         }
 
         public string Name { get; set; }
-
         public string CompanyID { get; set; } = Guid.NewGuid().ToString();
+        public List<Employee> Employees { get; set; } = new List<Employee>();
 
         public override bool Equals(object obj)
         {
@@ -35,6 +37,7 @@ namespace CompanyApi.Controllers
 
         public Employee AddEmployee(Employee newEmployee)
         {
+            Employees.Add(newEmployee);
             return newEmployee;
         }
     }
