@@ -60,6 +60,22 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(new List<Company>() { companyBenz, companyBMW }, gotCompanies);
         }
 
+        [Fact]
+        public async void Should_get_one_company_by_ID_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+
+            var response = await client.GetAsync($"/api/companies/{createdCompany.CompanyID}");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var gotCompany = await DeserializeToType<Company>(response);
+            Assert.Equal(companyBenz, gotCompany);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());

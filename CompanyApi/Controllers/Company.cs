@@ -1,3 +1,5 @@
+using System;
+
 namespace CompanyApi.Controllers
 {
     public class Company
@@ -12,6 +14,8 @@ namespace CompanyApi.Controllers
         }
 
         public string Name { get; set; }
+
+        public string CompanyID { get; set; } = Guid.NewGuid().ToString();
 
         public override bool Equals(object obj)
         {

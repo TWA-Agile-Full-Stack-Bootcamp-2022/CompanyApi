@@ -21,13 +21,20 @@ namespace CompanyApi.Controllers
             companies.Add(newCompany);
             return Ok(newCompany);
         }
-        
+
         [HttpGet]
         public List<Company> GetCompanies()
         {
             return companies;
         }
-        
+
+        [HttpGet("{companyID}")]
+        public Company GetCompany(string companyID)
+        {
+            var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
+            return foundCompany;
+        }
+
         [HttpDelete]
         public void ClearAllCompanies()
         {
