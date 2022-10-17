@@ -83,7 +83,7 @@ namespace CompanyApiTest.Controllers
 
             var companyBenz = new Company(name: "Benz");
             var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
-            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+            await DeserializeToType<Company>(createdCompanyResponse);
 
             var response = await client.GetAsync($"/api/companies/NOT_EXISTING_COMPANY_ID");
 
@@ -126,6 +126,24 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var gotCompanies = await DeserializeToType<List<Company>>(response);
             Assert.Equal(new List<Company>() { company3 }, gotCompanies);
+        }
+
+        [Fact]
+        public async void Should_update_company_name_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+            var updatedCompany = new Company() { CompanyID = createdCompany.CompanyID, Name = "MercedesBenz" };
+
+            var response = await client.PutAsync($"/api/companies/{createdCompany.CompanyID}",
+                SerializeToJsonString(updatedCompany));
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var gotCompany = await DeserializeToType<Company>(response);
+            Assert.Equal(updatedCompany, gotCompany);
         }
 
         private static async Task<HttpClient> ResetContextAndGetHttpClient()

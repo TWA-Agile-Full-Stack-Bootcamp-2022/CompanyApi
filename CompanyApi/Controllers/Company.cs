@@ -27,5 +27,10 @@ namespace CompanyApi.Controllers
         {
             return Name.GetHashCode();
         }
+
+        public void UpdateBy(Company updatedCompany)
+        {
+            Name = updatedCompany.Name;
+        }
     }
 }
