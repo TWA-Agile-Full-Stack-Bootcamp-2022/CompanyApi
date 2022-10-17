@@ -34,5 +34,11 @@ namespace CompanyApi.Controllers
         {
             return Companies;
         }
+
+        [HttpGet("{id}")]
+        public Company Get(string id)
+        {
+           return companies.First(company => id.Equals(company.Id));
+        }
     }
 }

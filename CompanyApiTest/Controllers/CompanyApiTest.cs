@@ -77,6 +77,28 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(company4, companies[3]);
         }
 
+        [Fact]
+        public async Task Should_return_company_by_id_when_call_api_with_id()
+        {
+            //given
+            var company1 = new Company("id1", "name1");
+            var company2 = new Company("id2", "name2");
+            var company3 = new Company("id3", "name3");
+            var company4 = new Company("id4", "name4");
+            CompaniesController.Companies = new List<Company>()
+            {
+                company1, company2, company3, company4
+            };
+            var httpClient = GetHttpClient();
+            //when
+            var responseMessage = await httpClient.GetAsync(url + "/id2");
+            //then
+            responseMessage.EnsureSuccessStatusCode();
+            var contentJson = await responseMessage.Content.ReadAsStringAsync();
+            var companyFind = JsonConvert.DeserializeObject<Company>(contentJson);
+            Assert.Equal(company2, companyFind);
+        }
+
         private static StringContent SerializeCompanyToJson(Company company)
         {
             var serializeObject = JsonConvert.SerializeObject(company);
