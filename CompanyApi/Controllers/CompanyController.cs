@@ -37,7 +37,7 @@ namespace CompanyApi.Controllers
         [HttpGet("{companyID}")]
         public ActionResult<Company> GetCompany(string companyID)
         {
-            var company = companies.Find(company => company.CompanyID.Equals(companyID));
+            var company = GetCompanyByID(companyID);
             if (company == null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ namespace CompanyApi.Controllers
         [HttpPut("{companyID}")]
         public ActionResult<Company> UpdateCompany(string companyID, Company updatedCompany)
         {
-            var company = companies.Find(company => company.CompanyID.Equals(companyID));
+            var company = GetCompanyByID(companyID);
             if (company == null)
             {
                 return NotFound();
@@ -62,7 +62,7 @@ namespace CompanyApi.Controllers
         [HttpPost("{companyID}/employees")]
         public ActionResult<Employee> AddNewEmployee(string companyID, Employee employee)
         {
-            var company = companies.Find(company => company.CompanyID.Equals(companyID));
+            var company = GetCompanyByID(companyID);
             if (company == null)
             {
                 return NotFound();
@@ -75,7 +75,7 @@ namespace CompanyApi.Controllers
         [HttpGet("{companyID}/employees")]
         public ActionResult GetEmployees(string companyID)
         {
-            var company = companies.Find(company => company.CompanyID.Equals(companyID));
+            var company = GetCompanyByID(companyID);
             if (company == null)
             {
                 return NotFound();
@@ -131,6 +131,17 @@ namespace CompanyApi.Controllers
         public void ClearAllCompanies()
         {
             companies.Clear();
+        }
+
+        [HttpDelete("{companyID}")]
+        public void DeleteCompany(string companyID)
+        {
+            companies.RemoveAll(company => company.CompanyID.Equals(companyID));
+        }
+
+        private Company GetCompanyByID(string companyID)
+        {
+            return companies.Find(company1 => company1.CompanyID.Equals(companyID));
         }
 
         private Employee GetEmployeeFromCompany(string companyID, string employeeID)

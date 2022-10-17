@@ -232,6 +232,30 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, getEmployeesResponse.StatusCode);
         }
 
+        [Fact]
+        public async void Should_delete_employees_when_delete_company()
+        {
+            // given
+            var client = await ResetContextAndGetHttpClient();
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+            var employee = new Employee() { Name = "LiSi", Salary = 20000 };
+            var addEmployeeResponse = await client.PostAsync($"/api/companies/{createdCompany.CompanyID}/employees",
+                SerializeToJsonString(employee));
+            var createdEmployee = await DeserializeToType<Employee>(addEmployeeResponse);
+            // when
+            var deleteResponse =
+                await client.DeleteAsync($"/api/companies/{createdCompany.CompanyID}");
+            // then
+            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+            var getEmployeesResponse =
+                await client.GetAsync(
+                    $"/api/companies/{createdCompany.CompanyID}/employees/{createdEmployee.EmployeeID}");
+            Assert.Equal(HttpStatusCode.NotFound, getEmployeesResponse.StatusCode);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
