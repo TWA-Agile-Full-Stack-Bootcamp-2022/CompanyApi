@@ -85,7 +85,7 @@ namespace CompanyApiTest.Controllers
             {
                 company1, company2, company3, company4,
             };
-            var httpClient = TestBase.GetHttpClient();
+            var httpClient = GetHttpClient();
             //when
             var responseMessage = await httpClient.GetAsync(url + "/id2");
             //then
@@ -107,7 +107,7 @@ namespace CompanyApiTest.Controllers
             {
                 company1, company2, company3, company4,
             };
-            var httpClient = TestBase.GetHttpClient();
+            var httpClient = GetHttpClient();
             //when
             var responseMessage = await httpClient.GetAsync(url + "/pageSize/2/pages/2");
             //then
@@ -128,7 +128,7 @@ namespace CompanyApiTest.Controllers
             {
                 company1,
             };
-            var httpClient = TestBase.GetHttpClient();
+            var httpClient = GetHttpClient();
             var companyExpect = new Company("id1", "nameUpdated");
             var putContent = new StringContent(JsonConvert.SerializeObject(companyExpect), Encoding.UTF8, "application/json");
             //when

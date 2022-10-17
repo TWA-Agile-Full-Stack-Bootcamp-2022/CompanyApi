@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers
@@ -22,6 +23,12 @@ namespace CompanyApi.Controllers
             employee.CompanyId = companyId;
             employees.Add(employee);
             return new CreatedResult("companies/{companyId}/employees", employee);
+        }
+
+        [HttpGet]
+        public List<Employee> ListByCompany(string companyId)
+        {
+            return employees.Where(employee => companyId.Equals(employee.CompanyId)).ToList();
         }
     }
 }
