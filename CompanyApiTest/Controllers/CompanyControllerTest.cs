@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,11 +28,31 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(company, savedCompany);
         }
 
+        [Fact]
+        public async void Should_return_BadRequest_when_add_new_company_with_the_same_name()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var company = new Company(name: "Benz");
+            var stringContent = SerializeToJsonString(company);
+
+            await client.PostAsync("/api/companies", stringContent);
+            var response = await client.PostAsync("/api/companies", stringContent);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             var client = server.CreateClient();
+            await ClearAllCompanies(client);
             return client;
+        }
+
+        private static async Task ClearAllCompanies(HttpClient client)
+        {
+            await client.DeleteAsync("/api/companies");
         }
 
         private static async Task<T> DeserializeToType<T>(HttpResponseMessage response)
