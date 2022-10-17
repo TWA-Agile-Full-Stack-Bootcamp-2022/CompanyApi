@@ -16,7 +16,7 @@ namespace CompanyApi.Controllers
         }
 
         public string Name { get; set; }
-        public string CompanyID { get; set; } = Guid.NewGuid().ToString();
+        public string CompanyID { get; set; } = $"C{Guid.NewGuid().ToString()}";
         public List<Employee> Employees { get; set; } = new List<Employee>();
 
         public override bool Equals(object obj)
@@ -39,6 +39,23 @@ namespace CompanyApi.Controllers
         {
             Employees.Add(newEmployee);
             return newEmployee;
+        }
+
+        public bool FindEmployee(string employeeID)
+        {
+            return Employees.Exists(employee => employee.EmployeeID.Equals(employeeID));
+        }
+
+        public Employee UpdateEmployee(string employeeID, Employee modifiedEmployee)
+        {
+            var foundEmployee = Employees.Find(employee => employee.EmployeeID.Equals(employeeID));
+            if (foundEmployee == null)
+            {
+                return null;
+            }
+
+            foundEmployee.UpdateBy(modifiedEmployee);
+            return foundEmployee;
         }
     }
 }

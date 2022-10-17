@@ -17,6 +17,7 @@ namespace CompanyApi.Controllers
         public int Salary { get; set; }
 
         public string Name { get; set; }
+        public string EmployeeID { get; set; } = $"E{Guid.NewGuid().ToString()}";
 
         public override bool Equals(object obj)
         {
@@ -27,6 +28,12 @@ namespace CompanyApi.Controllers
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, Salary);
+        }
+
+        public void UpdateBy(Employee modifiedEmployee)
+        {
+            Name = modifiedEmployee.Name;
+            Salary = modifiedEmployee.Salary;
         }
     }
 }

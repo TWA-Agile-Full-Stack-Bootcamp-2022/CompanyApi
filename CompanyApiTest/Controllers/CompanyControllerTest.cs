@@ -183,6 +183,30 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(new List<Employee>() { employee }, employees);
         }
 
+        [Fact]
+        public async void Should_update_employee_by_EmployeeID_in_company_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+            var employee = new Employee(name: "ZhangSan", salary: 10000);
+            var addEmployeeResponse = await client.PostAsync($"/api/companies/{createdCompany.CompanyID}/employees",
+                SerializeToJsonString(employee));
+            var createdEmployee = await DeserializeToType<Employee>(addEmployeeResponse);
+
+            var modifiedEmployee = new Employee() { Name = "LiSi", Salary = 20000 };
+            var response =
+                await client.PutAsync(
+                    $"/api/companies/{createdCompany.CompanyID}/employees/{createdEmployee.EmployeeID}",
+                    SerializeToJsonString(modifiedEmployee));
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var updatedEmployee = await DeserializeToType<Employee>(response);
+            Assert.Equal(modifiedEmployee, updatedEmployee);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
