@@ -41,9 +41,9 @@ namespace CompanyApi.Controllers
             return newEmployee;
         }
 
-        public bool FindEmployee(string employeeID)
+        public Employee FindEmployee(string employeeID)
         {
-            return Employees.Exists(employee => employee.EmployeeID.Equals(employeeID));
+            return Employees.Find(employee => employee.EmployeeID.Equals(employeeID));
         }
 
         public Employee UpdateEmployee(string employeeID, Employee modifiedEmployee)
@@ -56,6 +56,11 @@ namespace CompanyApi.Controllers
 
             foundEmployee.UpdateBy(modifiedEmployee);
             return foundEmployee;
+        }
+
+        public void DeleteEmployee(string employeeID)
+        {
+            Employees.RemoveAll(employee => employee.EmployeeID.Equals(employeeID));
         }
     }
 }

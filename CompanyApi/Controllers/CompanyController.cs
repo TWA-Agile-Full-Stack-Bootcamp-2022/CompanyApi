@@ -84,6 +84,24 @@ namespace CompanyApi.Controllers
             return Ok(foundCompany.Employees);
         }
 
+        [HttpGet("{companyID}/employees/{employeeID}")]
+        public ActionResult<Employee> GetEmployee(string companyID, string employeeID)
+        {
+            var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
+            if (foundCompany == null)
+            {
+                return NotFound();
+            }
+
+            var employee = foundCompany.FindEmployee(employeeID);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(employee);
+        }
+
         [HttpPut("{companyID}/employees/{employeeID}")]
         public ActionResult UpdateEmployee(string companyID, string employeeID, Employee modifiedEmployee)
         {
@@ -93,12 +111,30 @@ namespace CompanyApi.Controllers
                 return NotFound();
             }
 
-            if (!foundCompany.FindEmployee(employeeID))
+            if (foundCompany.FindEmployee(employeeID) == null)
             {
                 return NotFound();
             }
 
             return Ok(foundCompany.UpdateEmployee(employeeID, modifiedEmployee));
+        }
+
+        [HttpDelete("{companyID}/employees/{employeeID}")]
+        public ActionResult DeleteEmployee(string companyID, string employeeID)
+        {
+            var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
+            if (foundCompany == null)
+            {
+                return NotFound();
+            }
+
+            if (foundCompany.FindEmployee(employeeID) == null)
+            {
+                return NotFound();
+            }
+            
+            foundCompany.DeleteEmployee(employeeID);
+            return Ok();
         }
 
         [HttpDelete]
