@@ -90,6 +90,25 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async void Should_get_companies_by_page_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var company1 = new Company(name: "Company1");
+            var company2 = new Company(name: "Company2");
+            var company3 = new Company(name: "Company3");
+            await client.PostAsync("/api/companies", SerializeToJsonString(company1));
+            await client.PostAsync("/api/companies", SerializeToJsonString(company2));
+            await client.PostAsync("/api/companies", SerializeToJsonString(company3));
+
+            var response = await client.GetAsync($"/api/companies?pageSize=2&pageIndex=1");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var gotCompanies = await DeserializeToType<List<Company>>(response);
+            Assert.Equal(new List<Company>() { company1, company2 }, gotCompanies);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());

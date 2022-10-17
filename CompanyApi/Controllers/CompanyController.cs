@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers
@@ -23,8 +24,13 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet]
-        public List<Company> GetCompanies()
+        public List<Company> GetCompanies([FromQuery] int? pageSize, [FromQuery] int? pageIndex)
         {
+            if (pageSize != null && pageIndex != null)
+            {
+                return companies.Skip(pageSize.Value * (pageIndex.Value - 1)).Take(pageSize.Value).ToList();
+            }
+
             return companies;
         }
 
