@@ -99,6 +99,30 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(company2, companyFind);
         }
 
+        [Fact]
+        public async Task Should_return_than_page_company_when_search_by_page_given_page_size_2_index_2()
+        {
+           //given
+            var company1 = new Company("id1", "name1");
+            var company2 = new Company("id2", "name2");
+            var company3 = new Company("id3", "name3");
+            var company4 = new Company("id4", "name4");
+            CompaniesController.Companies = new List<Company>()
+            {
+                company1, company2, company3, company4
+            };
+            var httpClient = GetHttpClient();
+            //when
+            var responseMessage = await httpClient.GetAsync(url + "/pageSize/2/pages/2");
+            //then
+            responseMessage.EnsureSuccessStatusCode();
+            var contentJson = await responseMessage.Content.ReadAsStringAsync();
+            var companies = JsonConvert.DeserializeObject<List<Company>>(contentJson);
+            Assert.Equal(2, companies.Count);
+            Assert.Equal(company3, companies[0]);
+            Assert.Equal(company4, companies[1]);
+        }
+
         private static StringContent SerializeCompanyToJson(Company company)
         {
             var serializeObject = JsonConvert.SerializeObject(company);

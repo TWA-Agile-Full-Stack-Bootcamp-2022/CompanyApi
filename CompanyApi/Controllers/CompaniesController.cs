@@ -40,5 +40,12 @@ namespace CompanyApi.Controllers
         {
            return companies.First(company => id.Equals(company.Id));
         }
+
+        [HttpGet("pageSize/{pageSize}/pages/{pageIndex}")]
+        public List<Company> PagingGet(int pageSize, int pageIndex)
+        {
+            var startIndex = pageSize * (pageIndex - 1);
+            return companies.GetRange(startIndex, pageSize);
+        }
     }
 }
