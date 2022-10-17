@@ -5,18 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using CompanyApi;
 using CompanyApi.Controllers;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace CompanyApiTest.Controllers
 {
-    public class CompanyApiTest
+    public class CompanyApiTest : TestBase
     {
-        private string url = "companies";
+        private readonly string url = "companies";
 
         [Fact]
         public async Task Should_can_add_company_when_call_post_api_given_company_not_add()
@@ -62,9 +58,9 @@ namespace CompanyApiTest.Controllers
             var company4 = new Company("id4", "name4");
             CompaniesController.Companies = new List<Company>()
             {
-                company1, company2, company3, company4
+                company1, company2, company3, company4,
             };
-            var httpClient = GetHttpClient();
+            var httpClient = TestBase.GetHttpClient();
             //when
             var rspMessage = await httpClient.GetAsync(url);
             rspMessage.EnsureSuccessStatusCode();
@@ -87,9 +83,9 @@ namespace CompanyApiTest.Controllers
             var company4 = new Company("id4", "name4");
             CompaniesController.Companies = new List<Company>()
             {
-                company1, company2, company3, company4
+                company1, company2, company3, company4,
             };
-            var httpClient = GetHttpClient();
+            var httpClient = TestBase.GetHttpClient();
             //when
             var responseMessage = await httpClient.GetAsync(url + "/id2");
             //then
@@ -109,9 +105,9 @@ namespace CompanyApiTest.Controllers
             var company4 = new Company("id4", "name4");
             CompaniesController.Companies = new List<Company>()
             {
-                company1, company2, company3, company4
+                company1, company2, company3, company4,
             };
-            var httpClient = GetHttpClient();
+            var httpClient = TestBase.GetHttpClient();
             //when
             var responseMessage = await httpClient.GetAsync(url + "/pageSize/2/pages/2");
             //then
@@ -132,7 +128,7 @@ namespace CompanyApiTest.Controllers
             {
                 company1,
             };
-            var httpClient = GetHttpClient();
+            var httpClient = TestBase.GetHttpClient();
             var companyExpect = new Company("id1", "nameUpdated");
             var putContent = new StringContent(JsonConvert.SerializeObject(companyExpect), Encoding.UTF8, "application/json");
             //when
@@ -150,13 +146,6 @@ namespace CompanyApiTest.Controllers
             var serializeObject = JsonConvert.SerializeObject(company);
             var content = new StringContent(serializeObject, Encoding.UTF8, "application/json");
             return content;
-        }
-
-        private static HttpClient GetHttpClient()
-        {
-            var testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            var httpClient = testServer.CreateClient();
-            return httpClient;
         }
     }
 }
