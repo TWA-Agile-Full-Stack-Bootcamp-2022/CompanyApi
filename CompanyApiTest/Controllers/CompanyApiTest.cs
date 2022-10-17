@@ -13,7 +13,6 @@ namespace CompanyApiTest.Controllers
     public class CompanyApiTest : TestBase
     {
         private readonly string url = "companies";
-
         private string employeeUrl = "/companies/companyId/employees";
 
         [Fact]
@@ -100,7 +99,7 @@ namespace CompanyApiTest.Controllers
         [Fact]
         public async Task Should_return_than_page_company_when_search_by_page_given_page_size_2_index_2()
         {
-           //given
+            //given
             var company1 = new Company("id1", "name1");
             var company2 = new Company("id2", "name2");
             var company3 = new Company("id3", "name3");
@@ -124,7 +123,7 @@ namespace CompanyApiTest.Controllers
         [Fact]
         public async Task Should_update_company_name_when_put_url()
         {
-           //given
+            //given
             var company1 = new Company("id1", "name1");
             CompaniesController.Companies = new List<Company>()
             {
@@ -132,7 +131,8 @@ namespace CompanyApiTest.Controllers
             };
             var httpClient = GetHttpClient();
             var companyExpect = new Company("id1", "nameUpdated");
-            var putContent = new StringContent(JsonConvert.SerializeObject(companyExpect), Encoding.UTF8, "application/json");
+            var putContent = new StringContent(JsonConvert.SerializeObject(companyExpect), Encoding.UTF8,
+                "application/json");
             //when
             var responseMessage = await httpClient.PutAsync(url + "/id1", putContent);
             //then
@@ -234,7 +234,8 @@ namespace CompanyApiTest.Controllers
             var httpClient = GetHttpClient();
             var employeeExpect = new Employee("id1", "companyId", "张三", 3000);
             //when
-            var responseMessage = await httpClient.PutAsync(employeeUrl + "/id1", CovertEmployeesToContent(employeeExpect));
+            var responseMessage =
+                await httpClient.PutAsync(employeeUrl + "/id1", CovertEmployeesToContent(employeeExpect));
             //then
             responseMessage.EnsureSuccessStatusCode();
             var employJson = await responseMessage.Content.ReadAsStringAsync();
