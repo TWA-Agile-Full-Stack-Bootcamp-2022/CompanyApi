@@ -10,6 +10,7 @@ namespace CompanyApi.Controllers
     public class CompaniesController : ControllerBase
     {
         private static List<Company> companies = new List<Company>();
+
         public static List<Company> Companies
         {
             get => companies;
@@ -38,7 +39,7 @@ namespace CompanyApi.Controllers
         [HttpGet("{id}")]
         public Company Get(string id)
         {
-           return companies.First(company => id.Equals(company.Id));
+            return companies.First(company => id.Equals(company.Id));
         }
 
         [HttpGet("pageSize/{pageSize}/pages/{pageIndex}")]
@@ -54,6 +55,16 @@ namespace CompanyApi.Controllers
             var needUpdateCompany = companies.First(addedCompany => addedCompany.Id.Equals(id));
             needUpdateCompany.Name = company.Name;
             return needUpdateCompany;
+        }
+
+        [HttpDelete("{id}")]
+        public void Del(string id)
+        {
+            var employees = EmployeesController.Employees;
+            employees.Where(employee => id.Equals(employee.CompanyId)).ToList()
+                .ForEach(employee => employees.Remove(employee));
+            var needDelCompany = companies.First(company => id.Equals(company.Id));
+            companies.Remove(needDelCompany);
         }
     }
 }
