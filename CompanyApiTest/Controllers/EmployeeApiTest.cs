@@ -25,7 +25,7 @@ namespace CompanyApiTest.Controllers
             };
             var httpClient = GetHttpClient();
             var employee = new Employee("小甲", 2000.3);
-            var requestContent = CovertEmpoyeesToContent(employee);
+            var requestContent = CovertEmployeesToContent(employee);
             //when
             var httpResponseMessage = await httpClient.PostAsync(url, requestContent);
             //then
@@ -76,7 +76,7 @@ namespace CompanyApiTest.Controllers
             var httpClient = GetHttpClient();
             var employeeExpect = new Employee("id1", "companyId", "张三", 3000);
             //when
-            var responseMessage = await httpClient.PutAsync(url + "/id1", CovertEmpoyeesToContent(employeeExpect));
+            var responseMessage = await httpClient.PutAsync(url + "/id1", CovertEmployeesToContent(employeeExpect));
             //then
             responseMessage.EnsureSuccessStatusCode();
             var employJson = await responseMessage.Content.ReadAsStringAsync();
@@ -85,7 +85,27 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(employeeExpect, EmployeesController.Employees[0]);
         }
 
-        private static StringContent CovertEmpoyeesToContent(Employee employee)
+        [Fact]
+        public async Task Should_del_employee_when_del_given_company_id_and_id()
+        {
+            //given
+            var employee1 = new Employee("id1", "companyId", "employee1", 2000);
+            var employee2 = new Employee("id2", "companyId", "employee2", 2000);
+            var employee3 = new Employee("id3", "companyId", "employee3", 2000);
+            var employee4 = new Employee("id4", "otherCompanyId", "employee4", 2000);
+            EmployeesController.Employees = new List<Employee>()
+            {
+                employee1, employee2, employee3, employee4,
+            };
+            var httpClient = GetHttpClient();
+            //when
+            var responseMessage = await httpClient.DeleteAsync(url + "/id1");
+            //then
+            responseMessage.EnsureSuccessStatusCode();
+            Assert.Equal(3, EmployeesController.Employees.Count);
+        }
+
+        private static StringContent CovertEmployeesToContent(Employee employee)
         {
             var employeeJson = JsonConvert.SerializeObject(employee);
             var requestContent = new StringContent(employeeJson, Encoding.UTF8, "application/json");

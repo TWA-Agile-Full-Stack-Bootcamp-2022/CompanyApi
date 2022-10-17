@@ -39,5 +39,12 @@ namespace CompanyApi.Controllers
             employee.Salary = employeeInfo.Salary;
             return employee;
         }
+
+        [HttpDelete("{id}")]
+        public void Del(string companyId, string id)
+        {
+            var employee = employees.First(employee => companyId.Equals(employee.CompanyId) && id.Equals(employee.Id));
+            employees.Remove(employee);
+        }
     }
 }
