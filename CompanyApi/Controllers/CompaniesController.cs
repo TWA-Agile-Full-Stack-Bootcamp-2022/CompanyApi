@@ -47,5 +47,13 @@ namespace CompanyApi.Controllers
             var startIndex = pageSize * (pageIndex - 1);
             return companies.GetRange(startIndex, pageSize);
         }
+
+        [HttpPut("{id}")]
+        public Company Update(string id, Company company)
+        {
+            var needUpdateCompany = companies.First(addedCompany => addedCompany.Id.Equals(id));
+            needUpdateCompany.Name = company.Name;
+            return needUpdateCompany;
+        }
     }
 }

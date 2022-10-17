@@ -123,6 +123,28 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(company4, companies[1]);
         }
 
+        [Fact]
+        public async Task Should_update_company_name_when_put_url()
+        {
+           //given
+            var company1 = new Company("id1", "name1");
+            CompaniesController.Companies = new List<Company>()
+            {
+                company1,
+            };
+            var httpClient = GetHttpClient();
+            var companyExpect = new Company("id1", "nameUpdated");
+            var putContent = new StringContent(JsonConvert.SerializeObject(companyExpect), Encoding.UTF8, "application/json");
+            //when
+            var responseMessage = await httpClient.PutAsync(url + "/id1", putContent);
+            //then
+            responseMessage.EnsureSuccessStatusCode();
+            var responseJson = await responseMessage.Content.ReadAsStringAsync();
+            var updatedCompany = JsonConvert.DeserializeObject<Company>(responseJson);
+            Assert.Equal(companyExpect, updatedCompany);
+            Assert.Equal(companyExpect, CompaniesController.Companies[0]);
+        }
+
         private static StringContent SerializeCompanyToJson(Company company)
         {
             var serializeObject = JsonConvert.SerializeObject(company);
