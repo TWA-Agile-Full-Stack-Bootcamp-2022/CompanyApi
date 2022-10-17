@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace CompanyApiTest.Controllers
 {
     public class CompanyApiTest
     {
-        private string url = "Company";
+        private string url = "companies";
 
         [Fact]
         public async Task Should_can_add_company_when_call_post_api_given_company_not_add()
@@ -32,6 +33,7 @@ namespace CompanyApiTest.Controllers
             var companyAdded = JsonConvert.DeserializeObject<Company>(rpsContentJson);
             Assert.NotNull(companyAdded.Id);
             Assert.Equal(company.Name, companyAdded.Name);
+            Assert.Equal(HttpStatusCode.Created, httpResponseMessage.StatusCode);
         }
     }
 }
