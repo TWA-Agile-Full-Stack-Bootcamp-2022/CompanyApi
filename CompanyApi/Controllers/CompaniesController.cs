@@ -28,5 +28,11 @@ namespace CompanyApi.Controllers
             companies.Add(company);
             return new CreatedResult("/companies", company);
         }
+
+        [HttpGet]
+        public List<Company> List()
+        {
+            return Companies;
+        }
     }
 }
