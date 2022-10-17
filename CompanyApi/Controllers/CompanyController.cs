@@ -22,6 +22,12 @@ namespace CompanyApi.Controllers
             return Ok(newCompany);
         }
         
+        [HttpGet]
+        public List<Company> GetCompanies()
+        {
+            return companies;
+        }
+        
         [HttpDelete]
         public void ClearAllCompanies()
         {

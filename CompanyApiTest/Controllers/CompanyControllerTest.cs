@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -40,6 +41,23 @@ namespace CompanyApiTest.Controllers
             var response = await client.PostAsync("/api/companies", stringContent);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async void Should_return_all_companies_successfully()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var companyBMW = new Company(name: "BMW");
+            await client.PostAsync("/api/companies", SerializeToJsonString(companyBMW));
+
+            var response = await client.GetAsync("/api/companies");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var gotCompanies = await DeserializeToType<List<Company>>(response);
+            Assert.Equal(new List<Company>() { companyBenz, companyBMW }, gotCompanies);
         }
 
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
