@@ -10,6 +10,7 @@ using Xunit;
 
 namespace CompanyApiTest.Controllers
 {
+    [Collection("Sequential")]
     public class EmployeeApiTest : TestBase
     {
         private string url = "/companies/companyId/employees";
@@ -61,6 +62,27 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(employee1, employees[0]);
             Assert.Equal(employee2, employees[1]);
             Assert.Equal(employee3, employees[2]);
+        }
+
+        [Fact]
+        public async Task Should_update_employee_when_put_given_id_and_company_id()
+        {
+            //given
+            var employee1 = new Employee("id1", "companyId", "employee1", 2000);
+            EmployeesController.Employees = new List<Employee>()
+            {
+                employee1,
+            };
+            var httpClient = GetHttpClient();
+            var employeeExpect = new Employee("id1", "companyId", "张三", 3000);
+            //when
+            var responseMessage = await httpClient.PutAsync(url + "/id1", CovertEmpoyeesToContent(employeeExpect));
+            //then
+            responseMessage.EnsureSuccessStatusCode();
+            var employJson = await responseMessage.Content.ReadAsStringAsync();
+            var employeeUpdated = JsonConvert.DeserializeObject<Employee>(employJson);
+            Assert.Equal(employeeExpect, employeeUpdated);
+            Assert.Equal(employeeExpect, EmployeesController.Employees[0]);
         }
 
         private static StringContent CovertEmpoyeesToContent(Employee employee)

@@ -30,5 +30,14 @@ namespace CompanyApi.Controllers
         {
             return employees.Where(employee => companyId.Equals(employee.CompanyId)).ToList();
         }
+
+        [HttpPut("{id}")]
+        public Employee Update(string companyId, string id, Employee employeeInfo)
+        {
+            var employee = employees.First(employee => companyId.Equals(employee.CompanyId) && id.Equals(employee.Id));
+            employee.Name = employeeInfo.Name;
+            employee.Salary = employeeInfo.Salary;
+            return employee;
+        }
     }
 }

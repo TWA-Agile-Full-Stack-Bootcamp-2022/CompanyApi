@@ -10,6 +10,7 @@ using Xunit;
 
 namespace CompanyApiTest.Controllers
 {
+    [Collection("Sequential")]
     public class CompanyApiTest : TestBase
     {
         private readonly string url = "companies";
