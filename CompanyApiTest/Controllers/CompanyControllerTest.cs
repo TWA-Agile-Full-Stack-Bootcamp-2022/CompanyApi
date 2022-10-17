@@ -76,6 +76,20 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(companyBenz, gotCompany);
         }
 
+        [Fact]
+        public async void Should_get_one_company_by_ID_failed_given_not_existing_company_ID()
+        {
+            var client = await ResetContextAndGetHttpClient();
+
+            var companyBenz = new Company(name: "Benz");
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(companyBenz));
+            var createdCompany = await DeserializeToType<Company>(createdCompanyResponse);
+
+            var response = await client.GetAsync($"/api/companies/NOT_EXISTING_COMPANY_ID");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         private static async Task<HttpClient> ResetContextAndGetHttpClient()
         {
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());

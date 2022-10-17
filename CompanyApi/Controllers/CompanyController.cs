@@ -29,10 +29,15 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet("{companyID}")]
-        public Company GetCompany(string companyID)
+        public ActionResult<Company> GetCompany(string companyID)
         {
             var foundCompany = companies.Find(company => company.CompanyID.Equals(companyID));
-            return foundCompany;
+            if (foundCompany == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(foundCompany);
         }
 
         [HttpDelete]
