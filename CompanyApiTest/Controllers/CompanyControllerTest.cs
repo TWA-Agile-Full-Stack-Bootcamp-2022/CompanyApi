@@ -44,6 +44,21 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(companyGiven.Name, companyCreated.Name);
         }
 
+        [Fact]
+        public async Task Should_return_badrequest_when_post_given_a_existed_company_name()
+        {
+            // given
+            HttpClient client = BuildContextAndGetHttpClient();
+
+            Company companyGiven = new Company("Apple");
+            var requestContent = SerializeToJsonString(companyGiven);
+            await client.PostAsync("api/companies", requestContent);
+            // when
+            var response = await client.PostAsync("api/companies", requestContent);
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using System.Collections.Generic;
 
 namespace CompanyApi.Controllers
 {
@@ -7,6 +7,8 @@ namespace CompanyApi.Controllers
     [Route("api/companies")]
     public class CompanyController : ControllerBase
     {
+        private static List<Company> companies = new List<Company>();
+
         [HttpGet("hello")]
         public string Get()
         {
@@ -16,7 +18,13 @@ namespace CompanyApi.Controllers
         [HttpPost]
         public ActionResult<Company> CreateCompany(Company companyRequest)
         {
+            if (companies.Exists(company => company.Name.Equals(companyRequest.Name)))
+            {
+                return BadRequest();
+            }
+
             Company companyCreated = new Company(companyRequest.Name);
+            companies.Add(companyCreated);
             return companyCreated;
         }
     }
