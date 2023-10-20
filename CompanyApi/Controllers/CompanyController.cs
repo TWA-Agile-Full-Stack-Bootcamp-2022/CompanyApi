@@ -49,6 +49,14 @@ namespace CompanyApi.Controllers
             return companies;
         }
 
+        [HttpPut("{companyId}")]
+        public NoContentResult PutCompany(string companyId, Company updateRequest)
+        {
+            Company companyToUpdate = companies.First(company => company.Id.Equals(companyId));
+            companyToUpdate.Name = updateRequest.Name;
+            return NoContent();
+        }
+
         [HttpDelete]
         public void ClearAll()
         { 

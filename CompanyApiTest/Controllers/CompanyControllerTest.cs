@@ -113,6 +113,27 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(companyMicrosoft.Name, companiesFetched[0].Name);
         }
 
+        [Fact]
+        public async Task Should_can_uppdate_compainy_info_when_update_by_given_id_and_info()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            Company companyGiven = new Company("Apple");
+            var responseCreateCompany = await client.PostAsync("api/companies", SerializeToJsonString(companyGiven));
+            companyGiven = await DeserializeTo<Company>(responseCreateCompany);
+            Company companyForUpdate = new Company("Pineapple");
+
+            // when
+            var response = await client.PutAsync($"api/companies/{companyGiven.Id}", SerializeToJsonString(companyForUpdate));
+
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            responseCreateCompany = await client.GetAsync($"api/companies/{companyGiven.Id}");
+            var companyUpdated = await DeserializeTo<Company>(responseCreateCompany);
+            Assert.Equal(companyGiven.Id, companyUpdated.Id);
+            Assert.Equal(companyForUpdate.Name, companyUpdated.Name);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
