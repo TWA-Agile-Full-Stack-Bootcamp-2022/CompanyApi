@@ -66,6 +66,22 @@ namespace CompanyApiTest.Controllers
         }
 
         [Fact]
+        public async Task Should_return_the_company_when_get_by_given_Id()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            var responseCreateCompany = await client.PostAsync("api/companies", SerializeToJsonString(new Company("Apple")));
+            var companyGiven = await DeserializeTo<Company>(responseCreateCompany);
+
+            // when
+            var response = await client.GetAsync($"api/companies/{companyGiven.Id}");
+            // then
+            var companyGetById = await DeserializeTo<Company>(response);
+            Assert.Equal(companyGiven.Id, companyGetById.Id);
+            Assert.Equal(companyGiven.Name, companyGetById.Name);
+        }
+
+        [Fact]
         public async Task Should_return_the_compaines_in_page_when_get_all_given_page_paramaters()
         {
             // given

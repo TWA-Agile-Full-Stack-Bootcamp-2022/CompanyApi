@@ -23,6 +23,12 @@ namespace CompanyApi.Controllers
             return companyCreated;
         }
 
+        [HttpGet("{companyId}")]
+        public Company GetById(string companyId)
+        {
+            return companies.FirstOrDefault(company => company.Id == companyId);
+        }
+
         [HttpGet]
         public List<Company> GetAll([FromQuery] int? pageSize, [FromQuery] int? pageIndex)
         {
