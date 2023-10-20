@@ -65,6 +65,27 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(companyGoogle.Name, companiesFetched[1].Name);
         }
 
+        [Fact]
+        public async Task Should_return_the_compaines_in_page_when_get_all_given_page_paramaters()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+
+            Company companyApple = new Company("Apple");
+            Company companyGoogle = new Company("Google");
+            Company companyMicrosoft = new Company("Microsoft");
+            await client.PostAsync("api/companies", SerializeToJsonString(companyApple));
+            await client.PostAsync("api/companies", SerializeToJsonString(companyGoogle));
+            await client.PostAsync("api/companies", SerializeToJsonString(companyMicrosoft));
+
+            // when
+            var response = await client.GetAsync("api/companies?pageSize=2&pageIndex=2");
+            response.EnsureSuccessStatusCode();
+            List<Company> companiesFetched = await DeserializeTo<List<Company>>(response);
+            Assert.Single(companiesFetched);
+            Assert.Equal(companyMicrosoft.Name, companiesFetched[0].Name);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
