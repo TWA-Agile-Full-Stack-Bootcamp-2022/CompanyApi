@@ -15,21 +15,6 @@ namespace CompanyApiTest.Controllers
     public class CompanyControllerTest
     {
         [Fact]
-        public async Task Should_return_hello_world_with_default_request()
-        {
-            // given
-            HttpClient client = await BuildContextAndGetHttpClientAsync();
-
-            // when
-            var response = await client.GetAsync("api/companies/hello");
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            // then
-            Assert.Equal("Hello World", responseString);
-        }
-
-        [Fact]
         public async Task Should_create_and_return_the_company_when_post_by_given_a_company_request()
         {
             // given

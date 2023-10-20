@@ -9,12 +9,6 @@ namespace CompanyApi.Controllers
     {
         private static List<Company> companies = new List<Company>();
 
-        [HttpGet("hello")]
-        public string Get()
-        {
-            return "Hello World";
-        }
-
         [HttpPost]
         public ActionResult<Company> CreateCompany(Company companyRequest)
         {
