@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using CompanyApi;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +7,7 @@ using Xunit;
 
 namespace CompanyApiTest.Controllers
 {
-    public class HelloControllerTest
+    public class CompanyControllerTest
     {
         [Fact]
         public async Task Should_return_hello_world_with_default_request()
@@ -19,7 +18,7 @@ namespace CompanyApiTest.Controllers
             HttpClient client = server.CreateClient();
 
             // when
-            var response = await client.GetAsync("/hello");
+            var response = await client.GetAsync("api/companies/hello");
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
 
