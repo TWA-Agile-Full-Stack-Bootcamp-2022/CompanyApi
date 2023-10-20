@@ -17,9 +17,7 @@ namespace CompanyApiTest.Controllers
         public async Task Should_return_hello_world_with_default_request()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-               .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
+            HttpClient client = BuildContextAndGetHttpClient();
 
             // when
             var response = await client.GetAsync("api/companies/hello");
@@ -34,9 +32,7 @@ namespace CompanyApiTest.Controllers
         public async Task Should_create_and_return_the_company_when_post_by_given_a_company_request()
         {
             // given
-            TestServer server = new TestServer(new WebHostBuilder()
-               .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
+            HttpClient client = BuildContextAndGetHttpClient();
 
             Company companyGiven = new Company("Apple");
             var requestContent = SerializeToJsonString(companyGiven);
@@ -44,10 +40,22 @@ namespace CompanyApiTest.Controllers
             var response = await client.PostAsync("api/companies", requestContent);
             // then
             response.EnsureSuccessStatusCode();
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Company companyCreated = JsonConvert.DeserializeObject<Company>(responseBody);
+            Company companyCreated = await DeserializeTo<Company>(response);
             Assert.Equal(companyGiven.Name, companyCreated.Name);
+        }
+
+        private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(responseBody);
+        }
+
+        private static HttpClient BuildContextAndGetHttpClient()
+        {
+            TestServer server = new TestServer(new WebHostBuilder()
+               .UseStartup<Startup>());
+            HttpClient client = server.CreateClient();
+            return client;
         }
 
         private static StringContent SerializeToJsonString(Company companyGiven)
