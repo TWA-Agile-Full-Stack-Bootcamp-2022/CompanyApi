@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace CompanyApi.Controllers
 {
@@ -10,6 +11,13 @@ namespace CompanyApi.Controllers
         public string Get()
         {
             return "Hello World";
+        }
+
+        [HttpPost]
+        public ActionResult<Company> CreateCompany(Company companyRequest)
+        {
+            Company companyCreated = new Company(companyRequest.Name);
+            return companyCreated;
         }
     }
 }
