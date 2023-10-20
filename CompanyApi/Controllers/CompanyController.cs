@@ -24,9 +24,15 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet("{companyId}")]
-        public Company GetById(string companyId)
+        public ActionResult<Company> GetById(string companyId)
         {
-            return companies.FirstOrDefault(company => company.Id == companyId);
+            Company companyFound = companies.FirstOrDefault(company => company.Id == companyId);
+            if (companyFound == null)
+            { 
+                return NotFound();
+            }
+
+            return companyFound;
         }
 
         [HttpGet]

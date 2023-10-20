@@ -82,6 +82,17 @@ namespace CompanyApiTest.Controllers
         }
 
         [Fact]
+        public async Task Should_return_NOT_Found_when_get_by_id_given_a_not_existed_company_id()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            // when
+            var response = await client.GetAsync($"api/companies/{new Company("Some Company Not Existed").Id}");
+            // then
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
         public async Task Should_return_the_compaines_in_page_when_get_all_given_page_paramaters()
         {
             // given
