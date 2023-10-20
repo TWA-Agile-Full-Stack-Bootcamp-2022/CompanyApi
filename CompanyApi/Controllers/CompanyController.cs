@@ -27,5 +27,17 @@ namespace CompanyApi.Controllers
             companies.Add(companyCreated);
             return companyCreated;
         }
+
+        [HttpGet]
+        public List<Company> GetAll()
+        {
+            return companies;
+        }
+
+        [HttpDelete]
+        public void ClearAll()
+        { 
+            companies.Clear();
+        }
     }
 }
