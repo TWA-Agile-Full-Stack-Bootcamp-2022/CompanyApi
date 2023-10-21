@@ -177,6 +177,29 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_the_employees_when_get_all_employee_by_given_companyId()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            var createdCompanyResponse = await client.PostAsync("/api/companies",
+                SerializeToJsonString(new Company("Thoughtworks")));
+            var companyGiven = await DeserializeTo<Company>(createdCompanyResponse);
+
+            Employee alice = new Employee(name: "Alice", salary: 2000);
+            Employee bob = new Employee(name: "Bob", salary: 2000);
+            await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(alice));
+            await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(bob));
+            // when
+            var response = await client.GetAsync($"/api/companies/{companyGiven.Id}/employees");
+            // then
+            response.EnsureSuccessStatusCode();
+            List<Employee> employees = await DeserializeTo<List<Employee>>(response);
+            Assert.Equal(2, employees.Count);
+            Assert.Equal(alice, employees[0]);
+            Assert.Equal(bob, employees[1]);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();

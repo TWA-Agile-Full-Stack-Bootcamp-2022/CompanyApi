@@ -65,12 +65,22 @@ namespace CompanyApi.Controllers
         [HttpPost("{companyId}/employees")]
         public ActionResult<Employee> CreateEmployee(string companyId, Employee createRequest) 
         {
-            if (!companies.Exists(company => company.Id == companyId))
+            Company company = companies.Find(company => company.Id == companyId);
+            if (company == null)
             {
                 return NotFound();
             }
 
-            return new Employee(createRequest.Name, createRequest.Salary);
+            Employee employee = new Employee(createRequest.Name, createRequest.Salary);
+            company.Employees.Add(employee);
+            return employee;
+        }
+
+        [HttpGet("{companyId}/employees")]
+        public List<Employee> GetAllEmployees(string companyId) 
+        {
+            Company company = companies.Find(company => company.Id.Equals(companyId));
+            return company.Employees;
         }
 
         [HttpDelete]
