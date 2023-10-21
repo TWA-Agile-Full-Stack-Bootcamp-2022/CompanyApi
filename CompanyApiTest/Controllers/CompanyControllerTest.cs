@@ -134,6 +134,18 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(companyForUpdate.Name, companyUpdated.Name);
         }
 
+        [Fact]
+        public async Task Should_return_NOT_Found_when_update_given_a_Not_existed_company_id()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            // when
+            Company companyNotExisted = new Company("Some Company Not Existed");
+            var response = await client.PutAsync($"api/companies/{companyNotExisted.Id}", SerializeToJsonString(companyNotExisted));
+            // then
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();

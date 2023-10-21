@@ -50,9 +50,14 @@ namespace CompanyApi.Controllers
         }
 
         [HttpPut("{companyId}")]
-        public NoContentResult PutCompany(string companyId, Company updateRequest)
+        public ActionResult PutCompany(string companyId, Company updateRequest)
         {
-            Company companyToUpdate = companies.First(company => company.Id.Equals(companyId));
+            Company companyToUpdate = companies.Find(company => company.Id.Equals(companyId));
+            if (companyToUpdate == null)
+            { 
+                return NotFound();
+            }
+
             companyToUpdate.Name = updateRequest.Name;
             return NoContent();
         }
