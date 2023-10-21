@@ -146,6 +146,24 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_the_employee_when_create_employee_given_a_employee_under_company()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(new Company("Thoughtworks")));
+            var companyGiven = await DeserializeTo<Company>(createdCompanyResponse);
+
+            Employee employeeGiven = new Employee(name: "Alice", salary: 2000);
+            // when
+            var response = await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(employeeGiven));
+            // then
+            response.EnsureSuccessStatusCode();
+            Employee employeeCreated = await DeserializeTo<Employee>(response);
+            Assert.Equal(employeeGiven.Name, employeeCreated.Name);
+            Assert.Equal(employeeGiven.Salary, employeeCreated.Salary);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -161,9 +179,9 @@ namespace CompanyApiTest.Controllers
             return client;
         }
 
-        private static StringContent SerializeToJsonString(Company companyGiven)
+        private static StringContent SerializeToJsonString<T>(T objectGiven)
         {
-            return new StringContent(JsonConvert.SerializeObject(companyGiven), Encoding.UTF8, "application/json");
+            return new StringContent(JsonConvert.SerializeObject(objectGiven), Encoding.UTF8, "application/json");
         }
     }
 }

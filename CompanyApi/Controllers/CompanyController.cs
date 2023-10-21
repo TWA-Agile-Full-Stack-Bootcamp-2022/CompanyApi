@@ -62,6 +62,12 @@ namespace CompanyApi.Controllers
             return NoContent();
         }
 
+        [HttpPost("{companyId}/employees")]
+        public Employee GetEmployee(string companyId, Employee createRequest) 
+        {
+            return new Employee(createRequest.Name, createRequest.Salary);
+        }
+
         [HttpDelete]
         public void ClearAll()
         { 
