@@ -70,15 +70,14 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var responseCreateCompany = await client.PostAsync("api/companies", SerializeToJsonString(new Company("Apple")));
-            var companyGiven = await DeserializeTo<Company>(responseCreateCompany);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
 
             // when
-            var response = await client.GetAsync($"api/companies/{companyGiven.Id}");
+            var response = await client.GetAsync($"api/companies/{companyTW.Id}");
             // then
             var companyGetById = await DeserializeTo<Company>(response);
-            Assert.Equal(companyGiven.Id, companyGetById.Id);
-            Assert.Equal(companyGiven.Name, companyGetById.Name);
+            Assert.Equal(companyTW.Id, companyGetById.Id);
+            Assert.Equal(companyTW.Name, companyGetById.Name);
         }
 
         [Fact]
@@ -118,19 +117,17 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            Company companyGiven = new Company("Apple");
-            var responseCreateCompany = await client.PostAsync("api/companies", SerializeToJsonString(companyGiven));
-            companyGiven = await DeserializeTo<Company>(responseCreateCompany);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
             Company companyForUpdate = new Company("Pineapple");
 
             // when
-            var response = await client.PutAsync($"api/companies/{companyGiven.Id}", SerializeToJsonString(companyForUpdate));
+            var response = await client.PutAsync($"api/companies/{companyTW.Id}", SerializeToJsonString(companyForUpdate));
 
             // then
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-            responseCreateCompany = await client.GetAsync($"api/companies/{companyGiven.Id}");
+            var responseCreateCompany = await client.GetAsync($"api/companies/{companyTW.Id}");
             var companyUpdated = await DeserializeTo<Company>(responseCreateCompany);
-            Assert.Equal(companyGiven.Id, companyUpdated.Id);
+            Assert.Equal(companyTW.Id, companyUpdated.Id);
             Assert.Equal(companyForUpdate.Name, companyUpdated.Name);
         }
 
@@ -151,12 +148,11 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var createdCompanyResponse = await client.PostAsync("/api/companies", SerializeToJsonString(new Company("Thoughtworks")));
-            var companyGiven = await DeserializeTo<Company>(createdCompanyResponse);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
 
             Employee employeeGiven = new Employee(name: "Alice", salary: 2000);
             // when
-            var response = await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(employeeGiven));
+            var response = await client.PostAsync($"/api/companies/{companyTW.Id}/employees", SerializeToJsonString(employeeGiven));
             // then
             response.EnsureSuccessStatusCode();
             Employee employeeCreated = await DeserializeTo<Employee>(response);
@@ -182,16 +178,14 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var createdCompanyResponse = await client.PostAsync("/api/companies",
-                SerializeToJsonString(new Company("Thoughtworks")));
-            var companyGiven = await DeserializeTo<Company>(createdCompanyResponse);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
 
             Employee alice = new Employee(name: "Alice", salary: 2000);
             Employee bob = new Employee(name: "Bob", salary: 2000);
-            await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(alice));
-            await client.PostAsync($"/api/companies/{companyGiven.Id}/employees", SerializeToJsonString(bob));
+            await client.PostAsync($"/api/companies/{companyTW.Id}/employees", SerializeToJsonString(alice));
+            await client.PostAsync($"/api/companies/{companyTW.Id}/employees", SerializeToJsonString(bob));
             // when
-            var response = await client.GetAsync($"/api/companies/{companyGiven.Id}/employees");
+            var response = await client.GetAsync($"/api/companies/{companyTW.Id}/employees");
             // then
             response.EnsureSuccessStatusCode();
             List<Employee> employees = await DeserializeTo<List<Employee>>(response);
@@ -205,14 +199,10 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var createdCompanyResponse = await client.PostAsync("/api/companies",
-                SerializeToJsonString(new Company("Thoughtworks")));
-            var companyTW = await DeserializeTo<Company>(createdCompanyResponse);
-            var createdEmployeeResponse = await client.PostAsync($"/api/companies/{companyTW.Id}/employees",
-                SerializeToJsonString(new Employee(name: "Alice", salary: 2000)));
-            var employeeAlice = await DeserializeTo<Employee>(createdEmployeeResponse);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
+            Employee employeeAlice = await CreateEmployeeAsync(client, companyTW, new Employee(name: "Alice", salary: 2000));
             // when
-            var response = await client.PutAsync($"/api/companies/{companyTW.Id}/employees/{employeeAlice.Id}", 
+            var response = await client.PutAsync($"/api/companies/{companyTW.Id}/employees/{employeeAlice.Id}",
                 SerializeToJsonString(new Employee("Alice-2", 9999)));
             // then
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -228,9 +218,7 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var createdCompanyResponse = await client.PostAsync("/api/companies",
-                SerializeToJsonString(new Company("Thoughtworks")));
-            var companyTW = await DeserializeTo<Company>(createdCompanyResponse);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
             Employee employeeNotExisted = new Employee("Not existed Employee", 0);
 
             // when
@@ -245,18 +233,38 @@ namespace CompanyApiTest.Controllers
         {
             // given
             HttpClient client = await BuildContextAndGetHttpClientAsync();
-            var createdCompanyResponse = await client.PostAsync("/api/companies",
-                SerializeToJsonString(new Company("Thoughtworks")));
-            var companyTW = await DeserializeTo<Company>(createdCompanyResponse);
-            var createdEmployeeResponse = await client.PostAsync($"/api/companies/{companyTW.Id}/employees",
-             SerializeToJsonString(new Employee(name: "Alice", salary: 2000)));
-            var employeeAlice = await DeserializeTo<Employee>(createdEmployeeResponse);
+            var companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
+            var employeeAlice = CreateEmployeeAsync(client, companyTW, new Employee(name: "Alice", salary: 2000));
 
             // when
             var response = await client.PutAsync($"/api/companies/{new Company("Not Existed").Id}/employees/{employeeAlice.Id}",
                 SerializeToJsonString(employeeAlice));
             // then
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_can_delete_emplyee_when_delete_by_given_employee_id()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            Company companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
+            Employee employeeAlice = await CreateEmployeeAsync(client, companyTW, new Employee(name: "Alice", salary: 2000));
+        }
+
+        private static async Task<Employee> CreateEmployeeAsync(HttpClient client, Company company, Employee employee)
+        {
+            var createdEmployeeResponse = await client.PostAsync($"/api/companies/{company.Id}/employees",
+                         SerializeToJsonString(employee));
+            return await DeserializeTo<Employee>(createdEmployeeResponse);
+        }
+
+        private static async Task<Company> CreateCompanyAsync(HttpClient client, Company company)
+        {
+            var createdCompanyResponse = await client.PostAsync("/api/companies",
+                            SerializeToJsonString(company));
+            var companyCreated = await DeserializeTo<Company>(createdCompanyResponse);
+            return companyCreated;
         }
 
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
