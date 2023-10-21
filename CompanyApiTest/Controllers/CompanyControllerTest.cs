@@ -164,6 +164,19 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(employeeGiven.Salary, employeeCreated.Salary);
         }
 
+        [Fact]
+        public async Task Should_return_NOT_found_when_create_employee_given_a_not_existed_company()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            Company companyNotExisted = new Company("Not exist company");
+            Employee employeeGiven = new Employee(name: "Alice", salary: 2000);
+            // when
+            var response = await client.PostAsync($"/api/companies/{companyNotExisted.Id}/employees", SerializeToJsonString(employeeGiven));
+            // then
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();

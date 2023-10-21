@@ -63,8 +63,13 @@ namespace CompanyApi.Controllers
         }
 
         [HttpPost("{companyId}/employees")]
-        public Employee GetEmployee(string companyId, Employee createRequest) 
+        public ActionResult<Employee> CreateEmployee(string companyId, Employee createRequest) 
         {
+            if (!companies.Exists(company => company.Id == companyId))
+            {
+                return NotFound();
+            }
+
             return new Employee(createRequest.Name, createRequest.Salary);
         }
 
