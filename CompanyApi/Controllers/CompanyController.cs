@@ -87,6 +87,11 @@ namespace CompanyApi.Controllers
         public ActionResult UpdateEmployee(string companyId, string employeeId, Employee updateRequest)
         {
             Company company = companies.Find(company => company.Id.Equals(companyId));
+            if (company == null)
+            {
+                return NotFound();
+            }
+
             Employee employee = company.Employees.Find(employee => employee.Id.Equals(employeeId));
             if (employee == null)
             {
