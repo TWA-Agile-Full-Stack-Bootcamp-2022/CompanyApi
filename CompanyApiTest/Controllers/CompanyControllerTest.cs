@@ -200,6 +200,29 @@ namespace CompanyApiTest.Controllers
             Assert.Equal(bob, employees[1]);
         }
 
+        [Fact]
+        public async Task Should_update_the_employee_when_update_employee_by_given_companyId_and_employeeId()
+        {
+            // given
+            HttpClient client = await BuildContextAndGetHttpClientAsync();
+            var createdCompanyResponse = await client.PostAsync("/api/companies",
+                SerializeToJsonString(new Company("Thoughtworks")));
+            var companyTW = await DeserializeTo<Company>(createdCompanyResponse);
+            var createdEmployeeResponse = await client.PostAsync($"/api/companies/{companyTW.Id}/employees",
+                SerializeToJsonString(new Employee(name: "Alice", salary: 2000)));
+            var employeeAlice = await DeserializeTo<Employee>(createdEmployeeResponse);
+            // when
+            var response = await client.PutAsync($"/api/companies/{companyTW.Id}/employees/{employeeAlice.Id}", 
+                SerializeToJsonString(new Employee("Alice-2", 9999)));
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            var responseGetEmployees = await client.GetAsync($"/api/companies/{companyTW.Id}/employees");
+            List<Employee> employees = await DeserializeTo<List<Employee>>(responseGetEmployees);
+            Assert.Single(employees);
+            Assert.Equal("Alice-2", employees[0].Name);
+            Assert.Equal(9999, employees[0].Salary);
+        }
+
         private static async Task<T> DeserializeTo<T>(HttpResponseMessage response)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
