@@ -88,6 +88,11 @@ namespace CompanyApi.Controllers
         {
             Company company = companies.Find(company => company.Id.Equals(companyId));
             Employee employee = company.Employees.Find(employee => employee.Id.Equals(employeeId));
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
             employee.Name = updateRequest.Name;
             employee.Salary = updateRequest.Salary;
             return NoContent();
