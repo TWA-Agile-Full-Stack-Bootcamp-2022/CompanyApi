@@ -103,6 +103,25 @@ namespace CompanyApi.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{companyId}/employees/{employeeId}")]
+        public ActionResult DeleteEmployee(string companyId, string employeeId)
+        {
+            Company company = companies.Find(company => company.Id.Equals(companyId));
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            Employee employee = company.Employees.Find(employee => employee.Id.Equals(employeeId));
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            company.Employees.Remove(employee);
+            return NoContent();
+        }
+
         [HttpDelete]
         public void ClearAll()
         { 

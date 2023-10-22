@@ -250,6 +250,15 @@ namespace CompanyApiTest.Controllers
             HttpClient client = await BuildContextAndGetHttpClientAsync();
             Company companyTW = await CreateCompanyAsync(client, new Company("Thoughtworks"));
             Employee employeeAlice = await CreateEmployeeAsync(client, companyTW, new Employee(name: "Alice", salary: 2000));
+
+            // when
+            var response = await client.DeleteAsync($"/api/companies/{companyTW.Id}/employees/{employeeAlice.Id}");
+
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            var responseGetAllEmployees = await client.GetAsync($"/api/companies/{companyTW.Id}/employees");
+            List<Employee> employees = await DeserializeTo<List<Employee>>(responseGetAllEmployees);
+            Assert.Empty(employees);
         }
 
         private static async Task<Employee> CreateEmployeeAsync(HttpClient client, Company company, Employee employee)
